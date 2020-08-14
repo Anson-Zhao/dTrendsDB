@@ -116,3 +116,4 @@ function intervalFunc() {
 }
 
 setInterval(intervalFunc, 60000);
+//every minute check the time
