@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
     host: "localhost",
     user: "AppUser",
     password: "Special888%",
-    database: "automation"
+    database: "dtrends"
 });
 
 async function downloadImage() {
@@ -65,24 +65,28 @@ function interval2Func(){
                 let displayName;
                 let country;
                 let Name;
-                for (let i = 0; i < 744; i++){
+                //console.log("the length is: " + tableData.features.length);
+                for (let i = 0; i < tableData.features.length; i++){
                     state = tableData.features[i].properties.Province_State;
                     country = tableData.features[i].properties.Country_Region;
                     if(country.indexOf(" ") > -1){
-                        country = country.replace(" ", "_");
+                        //console.log("The spaces are: " + (country.match(/ /g) || []).length);
+                        //for(let i = 0; i < (country.match(/ /g) || []).length; i++) {
+                            country = country.replace(/ /g, "_");
+                        //}
                     }
                     if(state == null){
                         Name = coronav + "_" + layerDate + "_" + country;
                         displayName = country;
                     } else {
                         if(state.indexOf(" ") > -1){
-                            state = state.replace(" ", "_")
+                            state = state.replace(/ /g, "_")
                         }
                         Name = coronav + "_" + layerDate + "_" + country + "_" + state;
                         displayName = country + "_" + state;
                     }
                     //console.log(Name);
-                    let statement = "INSERT INTO layerdup (Date, LayerName, LayerType, Type, DisplayName, CaseNum, ActiveNum, DeathNum, RecovNum, Latitude, Longitude, StateName, CountryName, Color_Confirmed, Color_Death, Color_Recovered) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    let statement = "INSERT INTO covid19 (Date, LayerName, LayerType, Type, DisplayName, CaseNum, ActiveNum, DeathNum, RecovNum, Latitude, Longitude, StateName, CountryName, Color_Confirmed, Color_Death, Color_Recovered) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                     connection.query(statement, [date, Name, layertype, firstLayer, displayName, tableData.features[i].properties.Confirmed, tableData.features[i].properties.Active, tableData.features[i].properties.Deaths, tableData.features[i].properties.Recovered, tableData.features[i].properties.Lat, tableData.features[i].properties.Long_, state, tableData.features[i].properties.Country_Region, colorComf, colorDeath, colorRecov], function(err){
                         if (err){
                             throw err;
@@ -97,7 +101,7 @@ function interval2Func(){
         })
         try {
             fs.unlinkSync(deletePath);
-            console.log("done");
+            //console.log("done");
             //file removed
         } catch(err) {
             console.error(err)
@@ -117,3 +121,6 @@ function intervalFunc() {
 
 setInterval(intervalFunc, 60000);
 //every minute check the time
+
+//downloadImage();
+//interval2Func();
